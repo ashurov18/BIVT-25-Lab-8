@@ -32,7 +32,7 @@ namespace Lab8.White
 
             public void PlayMatch(int goals, int misses, ManTeam team = null)
             {
-                if (team == _derby)
+                if (_derby != null && team == _derby)
                 {
                     goals++;
                 }
