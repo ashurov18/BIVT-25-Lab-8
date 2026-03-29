@@ -23,14 +23,15 @@ namespace Lab8.White
         {
             private ManTeam _derby;
 
-            public ManTeam(string name, ManTeam derby = null) : base(name)
+            // Используем default вместо null для nullable-типов
+            public ManTeam(string name, ManTeam derby = default) : base(name)
             {
                 _derby = derby;
             }
 
             public ManTeam Derby => _derby;
 
-            public void PlayMatch(int goals, int misses, ManTeam team = null)
+            public void PlayMatch(int goals, int misses, ManTeam team = default)
             {
                 if (_derby != null && team == _derby)
                 {
@@ -62,22 +63,6 @@ namespace Lab8.White
                 }
                 base.PlayMatch(goals, misses);
             }
-        }
-
-        public static void Main(string[] args)
-        {
-            ManTeam team1 = new ManTeam("Спартак");
-            ManTeam team2 = new ManTeam("ЦСКА", team1);
-
-            team1.PlayMatch(1, 1, team2);
-            team2.PlayMatch(1, 2, team1);
-
-            WomanTeam wTeam1 = new WomanTeam("Зенит");
-            wTeam1.PlayMatch(1, 3);
-            wTeam1.PlayMatch(2, 1);
-
-            Console.WriteLine($"Штрафы Зенита: {string.Join(", ", wTeam1.Penalties)}");
-            Console.WriteLine($"Всего штрафов: {wTeam1.TotalPenalties}");
         }
     }
 }
