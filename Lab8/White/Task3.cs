@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace Lab8.White
 {
@@ -76,25 +75,6 @@ namespace Lab8.White
                 Console.WriteLine($"Студент: {_name} {_surname}, Пропуски: {_missedLessons}");
                 Console.WriteLine("Оценки: " + string.Join(", ", _marks));
             }
-        }
-
-        public static void Main(string[] args)
-        {
-            Undergraduate ug = new Undergraduate("Иван", "Иванов");
-            ug.Lesson(2);
-            ug.Lesson(2);
-            
-            ug.Print();
-
-            ug.WorkOff(4);
-            ug.WorkOff(3);
-            
-            ug.Print();
-
-            ug.Lesson(2);
-            ug.WorkOff(5);
-            
-            ug.Print();
         }
     }
 }
