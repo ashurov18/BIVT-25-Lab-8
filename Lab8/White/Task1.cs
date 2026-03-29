@@ -2,7 +2,7 @@ using System;
 
 namespace Lab8.White
 {
-    public class Participant
+    public class Task1
     {
         // Поля для хранения данных участника
         private string _name;
