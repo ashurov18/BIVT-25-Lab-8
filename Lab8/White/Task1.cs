@@ -1,127 +1,120 @@
-using System;
-using System.Collections.Generic;
-
 namespace Lab8.White
 {
     public class Task1
     {
         public class Participant
         {
-            // Внутренние поля (private), доступные только через свойства
             private string _surname;
             private string _club;
-            private double _firstJump;
-            private double _secondJump;
-            private int _jumpCount; // Счетчик прыжков для метода Jump
+            private double _firstjump;
+            private double _secondjump;
 
-            // Статические поля
-            private static int _standard = 5;
-            private static int _jumpers = 0;
-            private static int _disqualified = 0;
+            private  static double  _standard;
+            private static  int _jumpers;
+            private static int _disqualified;
 
-            // Свойства для чтения (только Get, CanWrite = false)
+
+
             public string Surname => _surname;
             public string Club => _club;
-            public double FirstJump => _firstJump;
-            public double SecondJump => _secondJump;
-            public double JumpSum => _firstJump + _secondJump;
+            public double FirstJump => _firstjump;
+            public double SecondJump => _secondjump;
 
-            // Статические свойства для чтения
-            public static int Standard => _standard;
-            public static int Jumpers => _jumpers;
+            public double JumpSum => _firstjump + _secondjump;
+            
+
+            public  static int Jumpers=>_jumpers;
             public static int Disqualified => _disqualified;
-
-            // Статический конструктор (TypeInitializer)
-            static Participant()
-            {
-                _standard = 5;
-                _jumpers = 0;
-                _disqualified = 0;
-            }
-
-            // Конструктор (принимает фамилию и клуб)
             public Participant(string surname, string club)
             {
                 _surname = surname;
                 _club = club;
-                _firstJump = 0;
-                _secondJump = 0;
-                _jumpCount = 0;
+                _firstjump = 0;
+                _secondjump = 0;
                 _jumpers++;
+                
+                
+            }
+            static Participant()
+            {
+                _disqualified = 0;
+                _jumpers = 0;
+                _standard = 5;
+
             }
 
-            // Метод Jump (принимает double, добавляет прыжок)
+
+
             public void Jump(double result)
             {
-                if (_jumpCount == 0)
+                if (_firstjump == 0)
                 {
-                    _firstJump = result;
+                    _firstjump = result;
                 }
-                else if (_jumpCount == 1)
+                else if (_secondjump == 0)
                 {
-                    _secondJump = result;
+                    _secondjump = result;
                 }
-                _jumpCount++;
+
             }
-
-            // Метод Sort (сортирует массив по убыванию суммы прыжков)
-            public static void Sort(Participant[] participants)
-            {
-                if (participants == null) return;
-
-                for (int i = 0; i < participants.Length - 1; i++)
-                {
-                    for (int j = 0; j < participants.Length - 1 - i; j++)
-                    {
-                        if (participants[j].JumpSum < participants[j + 1].JumpSum)
-                        {
-                            Participant temp = participants[j];
-                            participants[j] = participants[j + 1];
-                            participants[j + 1] = temp;
-                        }
-                    }
-                }
-            }
-
-            // Метод Disqualify (удаляет тех, у кого оба прыжка < 5)
             public static void Disqualify(ref Participant[] participants)
             {
-                if (participants == null) return;
-
-                int validCount = 0;
-                // Подсчет валидных
-                foreach (var p in participants)
+                if (participants == null || participants.Length==0)
+                    return;
+                int count = 0;
+                for (int i = 0; i < participants.Length; i++)
                 {
-                    if (p._firstJump >= _standard && p._secondJump >= _standard)
+                    if (participants[i].FirstJump >= _standard  &&  participants[i].SecondJump>=_standard)
                     {
-                        validCount++;
+                        count++;
+                    }
+                    else
+                    {
+                        _disqualified++;
+                        _jumpers--;
                     }
                 }
+                Participant[] participants1 = new Participant[count];
+                int k = 0;
 
-                // Создание нового массива
-                Participant[] newArray = new Participant[validCount];
-                int index = 0;
-                foreach (var p in participants)
+                for (int i=0; i < participants.Length; i++)
                 {
-                    if (p._firstJump >= _standard && p._secondJump >= _standard)
+                    if (participants[i].FirstJump >= _standard && participants[i].SecondJump >= _standard)
                     {
-                        newArray[index++] = p;
+                        participants1[k] = participants[i];
+                        k++;
                     }
                 }
+                participants = participants1;
 
-                // Обновление статических полей
-                _disqualified = participants.Length - validCount;
-                _jumpers = validCount;
-
-                // Возврат нового массива через ref
-                participants = newArray;
             }
 
-            // Метод Print (вывод информации)
+            public static void Sort(Participant[] array)
+            {
+                if (array == null || array.Length == 0)
+                    return;
+                for (int i = 0; i < array.Length; i++)
+                {
+                    for (int j = 1; j < array.Length; j++)
+                    {
+                        if (array[j - 1].JumpSum < array[j].JumpSum)
+                        {
+                            (array[j - 1], array[j]) = (array[j], array[j - 1]);
+                        }
+                    }
+
+                }
+            }
             public void Print()
             {
-                Console.WriteLine($"{_surname} {_club} | Прыжки: {_firstJump}, {_secondJump} | Сумма: {JumpSum}");
+                Console.WriteLine(_surname);
+                Console.WriteLine(_club);
+                Console.WriteLine(_firstjump);
+                Console.WriteLine(_secondjump);
+                Console.WriteLine(JumpSum);
             }
         }
+
+
     }
 }
