@@ -1,4 +1,4 @@
-using System;
+using System.Xml.Linq;
 
 namespace Lab8.White
 {
@@ -8,73 +8,136 @@ namespace Lab8.White
         {
             private string _name;
             private string _surname;
+            protected int _skipped;
             protected int[] _marks;
-            protected int _missedLessons;
 
+            public string Name => _name;
+            public string Surname => _surname;
+            public int Skipped => _skipped;
+           
+           
+            public double AverageMark
+            {
+                get
+                {
+                    if (_marks == null || _marks.Length == 0)
+                        return 0;
+                    double average = 0;
+                    for (int i = 0; i < _marks.Length; i++)
+                    {
+                        average += _marks[i];
+                    }
+                    average = average / _marks.Length;
+                    return average;
+                }
+            }
             public Student(string name, string surname)
             {
                 _name = name;
                 _surname = surname;
-                _marks = new int[5];
-                _missedLessons = 0;
+
             }
 
-            protected Student(Student other)
+
+            protected Student(Student student)
             {
-                _name = other._name;
-                _surname = other._surname;
-                _marks = (int[])other._marks.Clone();
-                _missedLessons = other._missedLessons;
+                _name = student._name;
+                _surname = student._surname;
+                _skipped = student._skipped;
+                _marks = student._marks;
             }
+
+
 
             public void Lesson(int mark)
             {
-                if (mark == 2)
+                if (mark == 0)
                 {
-                    _missedLessons++;
-                }
-            }
-
-            public string Name => _name;
-            public string Surname => _surname;
-            public int[] Marks => _marks;
-            public int MissedLessons => _missedLessons;
-        }
-
-        public class Undergraduate : Student
-        {
-            public Undergraduate(string name, string surname) : base(name, surname)
-            {
-            }
-
-            public Undergraduate(Student other) : base(other)
-            {
-            }
-
-            public void WorkOff(int mark)
-            {
-                if (_missedLessons > 0)
-                {
-                    _missedLessons--;
+                    _skipped++;
                 }
                 else
                 {
-                    for (int i = 0; i < _marks.Length; i++)
+                    if (_marks == null)
+                        _marks = new int[0];
+
+                    Array.Resize(ref _marks, _marks.Length + 1);
+                    _marks[_marks.Length - 1] = mark;
+                }
+
+            }
+            public static void SortBySkipped(Student[] array)
+            {
+                if (array == null || array.Length == 0)
+                    return;
+                for (int i = 0; i < array.Length; i++)
+                {
+                    for (int j = 1; j < array.Length; j++)
                     {
-                        if (_marks[i] == 2)
+                        if (array[j - 1].Skipped < array[j].Skipped)
                         {
-                            _marks[i] = mark;
-                            break;
+                            (array[j - 1], array[j]) = (array[j], array[j - 1]);
                         }
                     }
                 }
             }
-
             public void Print()
             {
-                Console.WriteLine($"Студент: {_name} {_surname}, Пропуски: {_missedLessons}");
-                Console.WriteLine("Оценки: " + string.Join(", ", _marks));
+                Console.WriteLine(_name);
+                Console.WriteLine(_surname);
+                Console.WriteLine(_skipped);
+                Console.WriteLine(_marks);
+                Console.WriteLine(AverageMark);
             }
+
         }
+        public class Undergraduate: Student
+        {
+
+            public Undergraduate(string name,string surname) : base(name,surname)
+            {
+
+            }
+
+            public Undergraduate(Student student) : base(student)
+            {
+
+            }
+
+            public void WorkOff(int mark)
+            {
+                if (_skipped>0)
+                {
+                    _skipped--;
+                    Lesson(mark);
+
+                }
+                else
+
+                {
+                    for (int i=0;i<_marks.Length;i++)
+                    {
+                        if (_marks[i]==2)
+                        {
+                            _marks[i] = mark;
+                            return;
+                            
+
+                        }
+                    }
+                }
+
+            }
+            public new void Print()
+            {
+              
+                Console.WriteLine(_skipped);
+                Console.WriteLine(_marks);
+                Console.WriteLine(WorkOff);
+
+            }
+
+        }
+
+
     }
 }
