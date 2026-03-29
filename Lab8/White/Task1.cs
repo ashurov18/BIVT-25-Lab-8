@@ -1,119 +1,126 @@
 using System;
+using System.Collections.Generic;
 
 namespace Lab8.White
 {
     public class Task1
     {
-        // Поля для хранения данных участника
-        private string _name;
-        private int[] _jumps;
-
-        // Статические поля
-        private static int _standard;
-        private static int _jumpers;
-        private static int _disqualified;
-
-        // Конструктор для инициализации конкретного участника
-        public Participant(string name, int[] jumps)
+        public class Participant
         {
-            _name = name;
-            _jumps = jumps;
-            _jumpers++;
-        }
+            // Внутренние поля (private), доступные только через свойства
+            private string _surname;
+            private string _club;
+            private double _firstJump;
+            private double _secondJump;
+            private int _jumpCount; // Счетчик прыжков для метода Jump
 
-        // Статический конструктор для инициализации статических полей
-        static Participant()
-        {
-            _standard = 5;
-            _jumpers = 0;
-            _disqualified = 0;
-        }
+            // Статические поля
+            private static int _standard = 5;
+            private static int _jumpers = 0;
+            private static int _disqualified = 0;
 
-        // Свойства для чтения статических полей
-        public static int Standard => _standard;
-        public static int Jumpers => _jumpers;
-        public static int Disqualified => _disqualified;
- 
-        public static void Disqualify(ref Participant[] participants)
-        {
-            int validCount = 0;
+            // Свойства для чтения (только Get, CanWrite = false)
+            public string Surname => _surname;
+            public string Club => _club;
+            public double FirstJump => _firstJump;
+            public double SecondJump => _secondJump;
+            public double JumpSum => _firstJump + _secondJump;
 
-            // Первый проход: подсчет количества участников, прошедших норматив
-            foreach (var p in participants)
+            // Статические свойства для чтения
+            public static int Standard => _standard;
+            public static int Jumpers => _jumpers;
+            public static int Disqualified => _disqualified;
+
+            // Статический конструктор (TypeInitializer)
+            static Participant()
             {
-                bool passed = false;
-                foreach (var jump in p._jumps)
-                {
-                    if (jump >= _standard)
-                    {
-                        passed = true;
-                        break;
-                    }
-                }
+                _standard = 5;
+                _jumpers = 0;
+                _disqualified = 0;
+            }
 
-                if (passed)
+            // Конструктор (принимает фамилию и клуб)
+            public Participant(string surname, string club)
+            {
+                _surname = surname;
+                _club = club;
+                _firstJump = 0;
+                _secondJump = 0;
+                _jumpCount = 0;
+                _jumpers++;
+            }
+
+            // Метод Jump (принимает double, добавляет прыжок)
+            public void Jump(double result)
+            {
+                if (_jumpCount == 0)
                 {
-                    validCount++;
+                    _firstJump = result;
+                }
+                else if (_jumpCount == 1)
+                {
+                    _secondJump = result;
+                }
+                _jumpCount++;
+            }
+
+            // Метод Sort (сортирует массив по убыванию суммы прыжков)
+            public static void Sort(Participant[] participants)
+            {
+                if (participants == null) return;
+
+                for (int i = 0; i < participants.Length - 1; i++)
+                {
+                    for (int j = 0; j < participants.Length - 1 - i; j++)
+                    {
+                        if (participants[j].JumpSum < participants[j + 1].JumpSum)
+                        {
+                            Participant temp = participants[j];
+                            participants[j] = participants[j + 1];
+                            participants[j + 1] = temp;
+                        }
+                    }
                 }
             }
 
-            // Создаем новый массив только с прошедшими участниками
-            Participant[] newParticipants = new Participant[validCount];
-            int index = 0;
-
-            // Второй проход: заполнение нового массива
-            foreach (var p in participants)
+            // Метод Disqualify (удаляет тех, у кого оба прыжка < 5)
+            public static void Disqualify(ref Participant[] participants)
             {
-                bool passed = false;
-                foreach (var jump in p._jumps)
+                if (participants == null) return;
+
+                int validCount = 0;
+                // Подсчет валидных
+                foreach (var p in participants)
                 {
-                    if (jump >= _standard)
+                    if (p._firstJump >= _standard && p._secondJump >= _standard)
                     {
-                        passed = true;
-                        break;
+                        validCount++;
                     }
                 }
 
-                if (passed)
+                // Создание нового массива
+                Participant[] newArray = new Participant[validCount];
+                int index = 0;
+                foreach (var p in participants)
                 {
-                    newParticipants[index++] = p;
+                    if (p._firstJump >= _standard && p._secondJump >= _standard)
+                    {
+                        newArray[index++] = p;
+                    }
                 }
+
+                // Обновление статических полей
+                _disqualified = participants.Length - validCount;
+                _jumpers = validCount;
+
+                // Возврат нового массива через ref
+                participants = newArray;
             }
 
-            // Обновляем ссылки на статические поля
-            _disqualified = participants.Length - validCount;
-            _jumpers = validCount;
-
-            // Передаем новый массив обратно через ref
-            participants = newParticipants;
-        }
-    }
-
-    public class Task1
-    {
-        public static void Main(string[] args)
-        {
-            Participant[] participants = new Participant[] 
-            { 
-                new Participant("Иванов", new int[] { 4, 4, 4 }), 
-                new Participant("Петров", new int[] { 5, 2, 2 }), 
-                new Participant("Сидоров", new int[] { 6, 6, 6 }), 
-                new Participant("Смирнов", new int[] { 3, 3, 3 }) 
-            };
-
-            Console.WriteLine($"До дисквалификации: Активных={Participant.Jumpers}, Дисквалифицированных={Participant.Disqualified}");
-
-            // Вызываем метод дисквалификации
-            Participant.Disqualify(ref participants);
-
-            Console.WriteLine($"После дисквалификации: Активных={Participant.Jumpers}, Дисквалифицированных={Participant.Disqualified}");
-            Console.WriteLine($"Осталось участников в массиве: {participants.Length}");
-            
-            // Вывод имен оставшихся
-            foreach(var p in participants)
+            // Метод Print (вывод информации)
+            public void Print()
             {
-                // Для вывода имен можно добавить свойство Name, но в задаче этого не требовалось.
-                // Оставим просто вывод количества.
+                Console.WriteLine($"{_surname} {_club} | Прыжки: {_firstJump}, {_secondJump} | Сумма: {JumpSum}");
             }
         }
     }
