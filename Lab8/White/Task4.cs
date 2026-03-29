@@ -2,7 +2,7 @@ using System;
 
 namespace Lab8.White
 {
-    public class Human
+    public class Task4
     {
         protected string _name;
         protected string _surname;
